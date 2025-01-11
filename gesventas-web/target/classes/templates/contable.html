@@ -1,0 +1,811 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+<body>
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1>
+								<i class="fas fa-file-invoice-dollar" style="color: #218838"></i>
+								<strong>GESTIÓN DE FINANCIERA </strong>
+							</h1>
+						</div>
+
+					</div>
+				</div>
+				<!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión Financiera</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<div class="dropdown">
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Diarios contables</button>
+						<div class="dropdown-content">
+						<a href="javaScript:abrirModal('registrarCentroCosto')">Registrar 
+							Centro de Costo</a>
+							<a href="javaScript:abrirModal('gastosNuevoModal')">Libro diario</a> 
+							
+						</div>
+					</div>
+					<div class="dropdown">
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Presupuesto</button>
+						<div class="dropdown-content">
+							<a href="#" onclick="abrirModal('presupuestoNuevoModal')">Presupuesto Mensual</a> 
+							<a href="#" onclick="abrirModal('presupuestoModal')">Estado Presupuesto</a>
+						</div>
+					</div>
+					<div class="dropdown">
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Utitilades</button>
+						<div class="dropdown-content">
+							<a href="javaScript:abrirModal('filtroCostoModal')">Cálculo Hrs/Hombres</a> 
+							<a href="javaScript:abrirModal('calculoContabilidadModal')">Finalzas</a> 
+							
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="card-body">
+			<div class="card-block">
+				<table class="table table-bordered table-striped" id="empleadost">
+					<thead id="cabeza-items">
+
+					</thead>
+
+
+					<tbody>
+
+					</tbody>
+
+				</table>
+
+
+			</div>
+
+		</div>
+
+	</main>
+
+
+
+	<div id="myModalCalendario" class="modal">
+		<div class="modal-content">
+			<h2>Filtrar por Número de Empleado</h2>
+
+			<div class="form-group">
+				<label for="numeroEmpleado">Número de Empleado:</label> <input
+					type="text" id="numeroEmpleado"
+					placeholder="Ingrese el número de empleado">
+			</div>
+
+			<div class="form-group">
+				<button onclick="filterByNumeroEmpleado()">Filtrar</button>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" th:id="empleadoId" name="empleadoId" value="">
+
+
+
+
+	<!--******************************************NUEVO MODAL PARA GESTIONAR GASTOS INDIRECTOS************************************** -->
+	<div class="modal" id="gastosNuevoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">GESTION DE GASTOS INDIRECTOS - COSTOS DIRECTOS</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('gastosNuevoModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h2 id="total_venta_confirmar"></h2>
+					<div class="card-body">
+
+						<div class="row">
+							<input type="hidden" id="idTipoGasto" name="idTipoGasto" value="">							
+							<input type="hidden" id="tipoGasto" name="tipoGasto" value="">
+							<input type="hidden" th:id="userId" name="userId" th:value="${user.idusuario}">
+							<input type="hidden" id="codigoCC" name="codigoCC" value="">
+							
+							<div class="imput-group col-md-4">
+								<select style="width: 100%" class="centrocosto form-control"
+									name="centroc" id="centroc" required>
+									<option value="">Centro Costo</option>
+								</select>
+							</div>
+							
+							<div class="imput-group col-md-4">
+								<select style="width: 100%" class="gastos form-control"
+									name="gasto" id="gasto" required>
+									<option value="">Tipo de Gasto</option>
+								</select>
+							</div>
+							
+								
+							<label for="Mes" class="col-md-1 col-lg-2 col-form-label">Entrada/Salida</label>
+							<div class="col-md-2 col-lg-2">
+								<select id="estado" name="estado"
+									class="form-control custom-select">
+									<option selected disabled>Seleccionar</option>
+									<option value="INGRESO">INGRESO</option>
+									<option value="EGRESO">EGRESO</option>
+									
+								</select>
+							</div>
+
+						</div>
+						<br>
+						<div class="row">
+						
+						<label class="col-md-1 col-lg-1 col-form-label">Moneda</label>
+							<div class="imput-group col-md-2">
+								<select style="width: 100%" id="idMoneda" name="idMoneda"
+									class="form-control custom-select"
+									onchange="validarChange(this,'idMoneda');">
+									<option selected disabled>Seleccionar</option>
+									<option th:each="mony : ${listaMoneda}" th:value="${mony.id}"
+										th:text="${mony.moneda}"></option>
+								</select>
+							</div>
+							<label  class="col-md-1 col-lg-1 col-form-label">Fecha</label>
+							<div class="imput-group col-md-2">											
+								<input type="date" class="form-control" id="datepicker" required>
+							</div>
+										
+							<label class="col-md-1 col-lg-1 col-form-label">Saldo</label>
+							<div class="imput-group col-md-2">
+								<input style="width: 100%" type="text" id="inputValor"
+									name="inputValor" class="form-control">
+							</div>
+							
+							
+							<div class="imput-group col-md-2">
+							<input type="checkbox" id="iva" value="first_checkbox" >
+							<label for="opcion1">SUMA IVA</label>
+							</div>
+
+							<div class="imput-group col-md-1">
+								<button type="submit" class="btn btn-primary"
+									href="javascript:;"
+									onclick="insertar(); return false">
+									<i class="fa-solid fa-circle-plus"></i>
+								</button>
+							</div>
+						</div><br>
+						<!-- LUGAR DONDE VOY REGISTRADO DATOS  -->
+						<div class="card-block">
+							<table class="table table-bordered table-striped" id="h-table">
+								<thead>
+									<tr style="background: #778899">
+									    <th>CC</th>
+										<th>GASTO</th>
+										<th>E/S</th>
+										<th>TIPO</th>
+										<th>MONEDA</th>
+										<th>SALDO</th>
+										<th>ARCHIVO</th>
+										<th>RECIBO</th>
+										<th>ACCION</th>
+									</tr>
+								</thead>
+								<tbody id="cuerpo-items">
+
+								</tbody>
+							</table>
+
+
+						</div>
+						<!--FIN-->
+
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="guardarGastos(); return false">Guardar</button>
+						</div>
+
+					</div>
+
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+<!-- *************************************************FIN************************************************ -->
+
+
+<!--******************************************NUEVO MODAL PARA GENERAR LAS UTILIDADES************************************** -->
+	<div class="modal" id="calculoUtilidadesModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">GESTION DE GASTOS INDIRECTOS - COSTOS DIRECTOS</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('calculoUtilidadesModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+
+						<div class="row">
+							
+							
+
+						</div>
+						<br>
+
+						<!-- LUGAR DONDE VOY REGISTRADO DATOS  -->
+						<div class="card-block">
+							<table class="table table-bordered table-striped" id="h-table-costo">
+								<thead>
+									<tr style="background: #778899">
+										<th>COSTO DIRECTO</th>
+										<th>TOTAL/MES</th> 
+										<th>TOTAL DIAS/MES</th>
+										<th>HORAS/DIAS</th> 
+										<th>COSTO HORA</th> 
+										<th>ACCIÓN</th>
+									</tr>
+								</thead>
+								<tbody id="cuerpo-items-costo">
+
+								</tbody>
+							</table>
+
+
+						</div>
+						<!--FIN-->
+
+					<div class="modal-footer">
+					<div id="divInferiorIzquierdo" class="posicion-inferior-izquierda">
+						<label>Costo Hr/Hombres: </label><label id="calculoHH">0</label>
+						
+					</div>
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="calcularCostoHH(); return false">Calcular Hr/H</button>
+								<button id="btGuardar" type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="guardarCalculo(); return false" disabled>Guardar</button>
+						</div>
+
+					</div>
+
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+<!-- *************************************************FIN************************************************ -->
+
+
+
+
+<!--******************************************NUEVO MODAL PARA GENERAR LA CONTABILIDAD************************************** -->
+<div class="modal" id="calculoContabilidadModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="background: #28a745;">
+				<h5 class="modal-title">GESTIÓN DE CONTABILIDAD MENSUAL - INGRESOS Y EGRESOS</h5>
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close"
+					onclick="cerrarModal('calculoContabilidadModal'); return false">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="card-body">
+
+					<!-- Sección de ingresos -->
+					<h5>INGRESOS</h5>
+					<div class="card-block">
+						<table class="table table-bordered table-striped" id="table-ingresos">
+							<thead>
+								<tr style="background: #d4edda">
+									<th>DESCRIPCIÓN INGRESO</th>
+									<th>TOTAL/MES</th>
+									<th>FECHA</th>
+									<th>ACCIÓN</th>
+								</tr>
+							</thead>
+							<tbody id="cuerpo-items-ingresos">
+								<!-- Aquí se agregarán dinámicamente las filas de ingresos -->
+							</tbody>
+						</table>
+					</div>
+					<br>
+
+					<!-- Sección de egresos -->
+					<h5>EGRESOS</h5>
+					<div class="card-block">
+						<table class="table table-bordered table-striped" id="table-egresos">
+							<thead>
+								<tr style="background: #f8d7da">
+									<th>DESCRIPCIÓN EGRESO</th>
+									<th>TOTAL/MES</th>
+									<th>FECHA</th>
+									<th>ACCIÓN</th>
+								</tr>
+							</thead>
+							<tbody id="cuerpo-items-egresos">
+								<!-- Aquí se agregarán dinámicamente las filas de egresos -->
+							</tbody>
+						</table>
+					</div>
+
+				<div class="modal-footer">
+					<div id="divResultado" class="posicion-inferior-izquierda">
+						<label>Resultado Mensual (Ingresos - Egresos): </label><label id="resultadoContabilidad">0</label>
+					</div>
+					<div class="text-center">
+						<button type="submit" class="btn btn-primary" href="javascript:;"
+							onclick="calcularContabilidad(); return false">Calcular Contabilidad</button>
+						<button id="btGuardarContabilidad" type="submit" class="btn btn-success" href="javascript:;"
+							onclick="guardarContabilidad(); return false" disabled>Guardar</button>
+					</div>
+				</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!-- *************************************************FIN************************************************ -->
+
+
+<style>
+    .posicion-inferior-izquierda {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+</style>
+
+
+<!--******************************************NUEVO MODAL BUSQUEDA DE COSTO PARA CALCULO DE HORAS/HOMBRES************************************** -->
+
+	<div class="modal" id="filtroCostoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">OBTENER COSTOS DIRECTOS </h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('filtroCostoModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Mes</label>
+							<div class="col-md-4 col-lg-4">
+								<select id="mes" name="mes" class="form-control custom-select">
+									<option selected disabled>Seleccionar</option>
+									<option th:each="mes : ${meses}" th:value="${mes.mes}"
+										th:text="${mes.valor}"></option>
+								</select>
+							</div>
+
+					</div>
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="obtenerCostosDirectos(); return false">Buscar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	</div>
+
+	<!--******************************************FIN******************************************************-->
+
+<!--******************************************NUEVO MODAL PARA REGISTRAR EL PRESUPUESTO************************************** -->
+<div class="modal" id="presupuestoNuevoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #17a2b8;">
+                <h5 class="modal-title">GESTIÓN DE PRESUPUESTOS</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="cerrarModal('presupuestoNuevoModal'); return false">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <!-- Form Row -->
+                    <div class="row">
+                        <!-- Banco y Número de Cuenta -->
+                        <div class="input-group col-md-6 mb-3">
+                            <label for="cuentaBancaria" class="col-form-label">Cuenta Bancaria</label>
+                            <select id="cuentaBancaria" name="cuentaBancaria" class="form-control custom-select" required>
+                                <option value="" selected disabled>Seleccionar Banco y Cuenta</option>
+                                <!-- Las opciones se llenarán dinámicamente desde la base de datos -->
+                            </select>
+                        </div>
+                    </div>
+					<input type="hidden" id="centrocID" name="centrocID" value="">
+
+                    <!-- Presupuesto Inicial -->
+                    <div class="row">
+                        <!-- Presupuesto en Pesos -->
+                        <label for="presupuestoInicial" class="col-md-2 col-form-label">Presupuesto (Pesos)</label>
+                        <div class="input-group col-md-4 mb-3">
+                            <input type="number" id="presupuestoInicial" name="presupuestoInicial" class="form-control" placeholder="Monto en pesos" required>
+                        </div>
+
+                        <!-- Presupuesto en Dólares -->
+                        <label for="presupuestoInicialDolares" class="col-md-2 col-form-label">Presupuesto (Dólares)</label>
+                        <div class="input-group col-md-4 mb-3">
+                            <input type="number" id="presupuestoInicialDolares" name="presupuestoInicialDolares" class="form-control" placeholder="Monto en dólares" required>
+                        </div>
+                        
+                        
+                        <div class="imput-group col-md-4">
+								<select style="width: 100%" class="centrocostoPre form-control"
+									name="centrocPre" id="centrocPre" required>
+									<option value="">Centro Costo</option>
+								</select>
+							</div>
+							<br>
+                    </div>
+
+                    <!-- Footer Buttons -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="cerrarModal('presupuestoNuevoModal'); return false">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarPresupuesto(); return false">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<!--******************************************FIN******************************************************-->
+	
+	
+	<!--******************************************NUEVO MODAL PARA consultar movimiento presupuesto************************************** -->
+	
+	<div class="modal" id="presupuestoModal" tabindex="-1" role="dialog" aria-labelledby="presupuestoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #17a2b8;">
+                <h5 class="modal-title" id="presupuestoModalLabel">Resumen de Presupuestos por Centro de Costo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="cerrarModal('presupuestoModal'); return false">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>CC</th>
+                            <th>Descripción</th>
+                            <th>Mes</th>
+                            <th>Año</th>
+                            <th>Banco</th>
+                            <th>Cuenta Banco</th>
+                            <th>Inicial Pesos</th>                            
+                            <th>Presupuesto Restante</th>
+                            <th>Inicial Dolares</th>
+                            <th>Presupuesto Restante</th>
+                            <th>Saldo en Cuenta</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="presupuestoData">
+                        <!-- Los datos se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+	
+	
+		<!--******************************************FIN******************************************************-->
+
+
+
+	<style>
+/* Style The Dropdown Button */
+.dropbtn {
+	background-color: #4CAF50;
+	color: white;
+	padding: 16px;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #f9f9f9;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+	background-color: #f1f1f1
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+	background-color: #3e8e41;
+}
+</style>
+
+	<!--******************************************FIN******************************************************-->
+
+
+
+<!--***************************** MODAL PARA REGISTRAR CENTRO DE COSTO*********************************** -->
+<div class="modal" id="registrarCentroCosto" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">REGISTRAR CENTRO DE COSTO </h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('registrarCentroCosto'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Código</label>
+							<div class="col-md-4 col-lg-4">
+								      <input name="codigo" type="text" class="form-control" id="codigo" value="" required>
+
+							</div>
+
+							</div>
+					
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Descripción</label>
+							<div class="col-md-4 col-lg-4">
+								      <input type="text" class="form-control" id="descripcion" name="descripcion" required><br>
+							</div>
+
+					</div>
+					
+					<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Estado</label>
+							<div class="col-md-4 col-lg-4">
+								 <select id="estado" name="estado" class="form-control custom-select" required>
+						        <option value="activo">Activo</option>
+						        <option value="inactivo">Inactivo</option>
+						      </select><br>
+							</div>
+
+					</div>
+					
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="guardarCentroCosto(); return false">Guardar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	</div>
+
+
+
+	<!--******************************************FIN******************************************************-->
+
+
+
+	<div th:replace="template :: mDiaTemplate"></div>
+
+	<div th:replace="template :: loadingTemplate"></div>
+
+	<div th:replace="template :: footer"></div>
+	
+	<script src="js/presupuesto.js"></script>
+	
+
+</body>
+
+
+<style type="text/css">
+.text_verde {
+	color: #006400;
+	font-weight: bold;
+}
+
+.text_rojo {
+	color: #C40000;
+	font-weight: bold;
+}
+
+.text_verde {
+	color: #060;
+	font-weight: bold;
+}
+
+.text_azul {
+	color: #00F;
+	font-weight: bold;
+}
+
+.text_naranja {
+	color: #F60;
+	font-weight: bold;
+}
+
+.text_negro {
+	color: #000000;
+	font-weight: bold;
+}
+
+.text_normal {
+	color: inherit;
+}
+
+a.active {
+	background-color: #4CAF50;
+	color: white;
+	border-radius: 5px;
+}
+
+div.nav {
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+}
+
+.nav.a {
+	display: inline;
+}
+
+a.bot {
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.loader-page {
+	position: fixed;
+	z-index: 25000;
+	background: rgb(255, 255, 255);
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all .3s ease;
+}
+
+.loader-page::before {
+	content: "";
+	position: absolute;
+	border: 2px solid rgb(50, 150, 176);
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	box-sizing: border-box;
+	border-left: 2px solid rgba(50, 150, 176, 0);
+	border-top: 2px solid rgba(50, 150, 176, 0);
+	animation: rotarload 1s linear infinite;
+	transform: rotate(0deg);
+}
+
+.loader-page::after {
+	content: "";
+	position: absolute;
+	border: 2px solid rgba(50, 150, 176, .5);
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	box-sizing: border-box;
+	border-left: 2px solid rgba(50, 150, 176, 0);
+	border-top: 2px solid rgba(50, 150, 176, 0);
+	animation: rotarload 1s ease-out infinite;
+	transform: rotate(0deg);
+}
+
+/*NUEVO PARA PROBAR*/
+.dropdown {
+	display: inline-block;
+	position: relative;
+}
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	width: 100%;
+	overflow: auto;
+	box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+.dropdown-content a {
+	display: block;
+	color: #000000;
+	padding: 5px;
+	text-decoration: none;
+}
+
+.dropdown-content a:hover {
+	color: #FFFFFF;
+	background-color: #00A4BD;
+}
+</style>
+
+
+</html>
