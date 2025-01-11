@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy JAR app to Azure Web App - gescontrol
+name: Build and deploy WAR app to Azure Web App - loginv1
 
 on:
   push:
@@ -14,22 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Clonar el repositorio y los submódulos
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
 
+      # Configurar Java 17
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'microsoft'
 
+      # Compilar el proyecto y los submódulos
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -DskipTests
 
-      - name: Upload artifact for deployment job
+      # Subir el artefacto generado por common-gescontrol
+      - name: Upload artifact for common-gescontrol
         uses: actions/upload-artifact@v4
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          name: common-gescontrol
+          path: common-gescontrol/target/*.jar
+
+      # Subir el artefacto generado por gesventas-web
+      - name: Upload artifact for gesventas-web
+        uses: actions/upload-artifact@v4
+        with:
+          name: gesventas-web
+          path: gesventas-web/target/*.war
 
   deploy:
     runs-on: ubuntu-latest
@@ -38,26 +52,35 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-  
+      id-token: write # Esto es requerido para solicitar el JWT
+
     steps:
-      - name: Download artifact from build job
+      # Descargar el artefacto del submódulo common-gescontrol
+      - name: Download artifact - common-gescontrol
         uses: actions/download-artifact@v4
         with:
-          name: java-app
-      
+          name: common-gescontrol
+
+      # Descargar el artefacto del submódulo gesventas-web
+      - name: Download artifact - gesventas-web
+        uses: actions/download-artifact@v4
+        with:
+          name: gesventas-web
+
+      # Iniciar sesión en Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F6367A4E049D42A2B8140D2C1E761B2F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9EF72345431E401E85FC7410609ECC59 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_74E520125252413BB83D5FBCBEEA5FB7 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B9F8CE3B204940F5838B4CF60FA35468 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6301DF8EB7AF4FBE9D7075D53195C8D8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8AFD0065E09242BA96E6B7F5999EA18F }}
 
+      # Desplegar en Azure Web App
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'gescontrol'
+          app-name: 'loginv1'
           slot-name: 'Production'
-          package: '*.jar'
+          package: gesventas-web/target/*.war
           
