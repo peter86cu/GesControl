@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gesventas-web-war
-          path: gesventas-web/target/*.war
+          path: '${{ github.workspace }}/target/*.war'
 
   deploy:
     runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
         with:
           app-name: 'gescontrol'
           slot-name: 'Production'
-          package: gesventas-web/target/*.war
+          package: '*.war'
 
 
           
