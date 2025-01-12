@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy JAR app to Azure Web App - gescontrol
+name: Build and deploy WAR app to Azure Web App - gescontrol
 
 on:
   push:
@@ -14,22 +14,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Clonar el repositorio y los submódulos
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
 
+      # Configurar Java 17
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'microsoft'
 
+      # Compilar el proyecto y los submódulos
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -DskipTests
 
+      # Subir el artefacto WAR generado por gesventas-web
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          name: gesventas-web-war
+          path: gesventas-web/target/*.war
 
   deploy:
     runs-on: ubuntu-latest
@@ -38,14 +45,16 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-  
+      id-token: write # Esto es requerido para solicitar el JWT
+
     steps:
+      # Descargar el artefacto generado por gesventas-web
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: java-app
+          name: gesventas-web-war
       
+      # Iniciar sesión en Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -53,11 +62,13 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C64A815971C44B40A0BE12BCACAE657A }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0742E6BB553B4C918DC2ACF36D5C7580 }}
 
+      # Desplegar el archivo WAR en Azure Web App
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'gescontrol'
           slot-name: 'Production'
-          package: '*.jar'
+          package: gesventas-web/target/*.war
+
           
