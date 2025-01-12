@@ -29,13 +29,13 @@ jobs:
 
       # Compilar el proyecto y los submódulos
       - name: Build with Maven
-        run: mvn clean install -DskipTests
+        run: mvn clean install -DskipTests -X
 
       # Subir el artefacto WAR generado por gesventas-web
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: gesventas-web
+          name: gesventas-web-war
           path: gesventas-web/target/*.war
 
   deploy:
@@ -52,8 +52,8 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: gesventas-web
-      
+          name: gesventas-web-war
+
       # Iniciar sesión en Azure
       - name: Login to Azure
         uses: azure/login@v2
@@ -70,5 +70,6 @@ jobs:
           app-name: 'gescontrol'
           slot-name: 'Production'
           package: gesventas-web/target/*.war
+
 
           
