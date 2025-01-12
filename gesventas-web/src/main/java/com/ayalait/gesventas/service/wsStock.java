@@ -1366,7 +1366,7 @@ public final class wsStock {
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
  
-			}else if (response.getStatusCodeValue() == 201) {
+			}else if (response.getStatusCodeValue() == 204) {
 
 				responseResult.setStatus(false);
 				ErrorState noExiste=new ErrorState();
