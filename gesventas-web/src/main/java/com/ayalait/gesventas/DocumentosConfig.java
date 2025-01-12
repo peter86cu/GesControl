@@ -20,11 +20,11 @@ public class DocumentosConfig implements WebMvcConfigurer{
 			registry.addResourceHandler("/ordenes/**").addResourceLocations("file:/C:/recursos/ordenes/");
 			registry.addResourceHandler("/prefacturas/**").addResourceLocations("file:/C:/recursos/prefacturas/");	
 		}else {
-			registry.addResourceHandler("/empleados/**").addResourceLocations("file:/home/jelastic/conf/empleados/");
-			registry.addResourceHandler("/productos/**").addResourceLocations("file:/home/jelastic/conf/productos/");
-			registry.addResourceHandler("/titulos/**").addResourceLocations("file:/home/jelastic/conf/titulos/");
-			registry.addResourceHandler("/ordenes/**").addResourceLocations("file:/home/jelastic/conf/ordenes/");
-			registry.addResourceHandler("/prefacturas/**").addResourceLocations("file:/home/jelastic/conf/prefacturas/");
+			registry.addResourceHandler("/empleados/**").addResourceLocations("file:/site/recursos/empleados/");
+			registry.addResourceHandler("/productos/**").addResourceLocations("file:/site/recursos/productos/");
+			registry.addResourceHandler("/titulos/**").addResourceLocations("file:/site/recursos/titulos/");
+			registry.addResourceHandler("/ordenes/**").addResourceLocations("file:/site/recursos/ordenes/");
+			registry.addResourceHandler("/prefacturas/**").addResourceLocations("file:/site/recursos/prefacturas/");
 		}
 		/*registry.addResourceHandler("/empleados/**").addResourceLocations("file:/C:/recursos/empleados/");
 		registry.addResourceHandler("/productos/**").addResourceLocations("file:/C:/recursos/productos/");
