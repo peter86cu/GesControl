@@ -1366,6 +1366,14 @@ public final class wsStock {
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
  
+			}else if (response.getStatusCodeValue() == 201) {
+
+				responseResult.setStatus(false);
+				ErrorState noExiste=new ErrorState();
+				noExiste.setCode(204);
+				noExiste.setMenssage("No se existen cotizaciones en la web.");
+				responseResult.setError(noExiste);
+ 
 			}
 
 		} catch (org.springframework.web.client.HttpServerErrorException e) {
