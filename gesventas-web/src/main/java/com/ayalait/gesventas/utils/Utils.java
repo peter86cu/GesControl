@@ -300,7 +300,7 @@ public class Utils {
 		if(!itemsCompra.isEmpty()) {
 			for(ItemsOrdenCompra item: itemsCompra) {
 				 estado = Conexion.getConexion("SELECT i.aplicar as iva,pf.cantidad FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
-						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura='"+id+"' GROUP BY i.aplicar,pf.importe");
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura='"+id+"' GROUP BY i.aplicar,pf.cantidad");
 				while ( estado.next()) {
 					 iva1 = estado.getDouble("iva");
 					 if(item.getImporte()>0)
@@ -685,7 +685,7 @@ public class Utils {
 		List<VentasPorArqueoUsuario> lstVentas = new ArrayList<VentasPorArqueoUsuario> ();
 		ResultSet compra=null;
 		try {
-			compra = Conexion.getConexion("SELECT ater.id_apertura_cajero,ater.fecha_inicio,vc.id_venta_cobro,vc.cobro, fc.descripcion FROM aperturas_terminal ater, apertura_dia ad, arqueos a, ventas v, ventas_cobros vc, formas_cobros fc WHERE ater.id_apertura_dia=ad.id AND a.id_apertura_cajero=ater.id_apertura_cajero \r\n"
+			compra = Conexion.getConexion("SELECT distinct ater.id_apertura_cajero,ater.fecha_inicio,vc.id_venta_cobro,vc.cobro, fc.descripcion FROM aperturas_terminal ater, apertura_dia ad, arqueos a, ventas v, ventas_cobros vc, formas_cobros fc WHERE ater.id_apertura_dia=ad.id AND a.id_apertura_cajero=ater.id_apertura_cajero \r\n"
 					+ "AND v.id_apertura_cajero=ater.id_apertura_cajero AND vc.id_venta=v.id_venta AND fc.id_forma_cobro=vc.id_forma_cobro AND ater.id_usuario='"+idUsuario+"'"
 					+ "AND ater.fecha_hora_cierre IS NOT NULL AND ater.fecha_inicio='"+fecha+"' AND ater.id_tipo_arqueo=3 AND a.id_cuadre=2 AND v.estado=2");
            if(compra!=null){
@@ -790,7 +790,7 @@ public class Utils {
 		try {
 			ordenes = Conexion.getConexion(
 					"select o.id_prefactura_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre,p.um from prefactura_detalle o inner join producto p \r\n"
-					+ " on (o.id_producto=p.id) and o.id_prefactura='"+idOrden+"'  group by p.codigo");
+					+ " on (o.id_producto=p.id) and o.id_prefactura='"+idOrden+"'  group by id_detalle, o.cantidad, o.importe, p.codigo,p.nombre,p.um ");
 			if(ordenes!=null) {
 				while (ordenes.next()) {
 					ItemsOrdenCompra items = new ItemsOrdenCompra();
@@ -1077,7 +1077,7 @@ public class Utils {
 			for ( venta = Conexion.getConexion(
 					"select p.idiva,p.id, p.codigo, sum(d.cantidad) as cantidad,precio_venta(p.id) precio, p.nombre, (select m.simbolo from moneda m where m.defecto=1 ) moneda,d.id_venta_detalle, v.id_cliente from ventas_detalle d, ventas v, producto p where v.id_venta="
 							+ idVenta
-							+ " and v.id_venta=d.id_venta and d.id_producto =p.id and cantidad <>0 group by p.id "); venta
+							+ " and v.id_venta=d.id_venta and d.id_producto =p.id and cantidad <>0 group by p.idiva,p.id, p.codigo,d.cantidad,precio, p.nombre,moneda,d.id_venta_detalle, v.id_cliente "); venta
 						 .next(); encontre = true) {
 				com.ayalait.modelo.ItemsVenta items = new com.ayalait.modelo.ItemsVenta();
 				items.setIdiva(venta.getInt("idiva"));

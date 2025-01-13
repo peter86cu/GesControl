@@ -1181,33 +1181,42 @@ public class OrdenesFacturasController {
 			 @ModelAttribute("tipo") int moneda, Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
 		if (LoginController.session.getToken() != null) {
 			List<ItemsProducto> itemsProductosNew= new ArrayList<ItemsProducto>();
-
+            boolean opend=false;
 			if(LoginController.session.getOepnDay().isEmpty()) {				 
                 ResponseOpenDay aperturaDia = LoginController.conCaja.openDay(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDD.getFormato()));
                 if(aperturaDia.isStatus()) {
                 	LoginController.session.setOepnDay(aperturaDia.getOpen());
+                	opend=true;
+				}else {
+					
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write("{\"results\": [], \"message\": \"Debe abrir el día, para poder continuar.\"}");
 				}
 			}
 			
+			if(!opend) {
+				modelo.addAttribute("user", LoginController.session.getUser());
+				List<ItemsProducto> itemsProductos = Utils.listadoItemsProductos(busqueda,evento);
+				for (ItemsProducto itemsProducto : itemsProductos) {
+					ItemsProducto neow = itemsProducto;
+					if(itemsProducto.getId_moneda()!=moneda && moneda==1) {
+						neow.setPrecio(Utils.formatearDecimales(itemsProducto.getPrecio()*LoginController.session.getOepnDay().stream().filter(e->e.getIdmoneda()==moneda).findAny().get().getValorventa(),2)); 
+
+					}else {
+						//Validar que este abierto el dia 
+						neow.setPrecio(Utils.formatearDecimales(itemsProducto.getPrecio()/ LoginController.session.getOepnDay().stream().filter(e->e.getIdmoneda()==moneda).findAny().get().getValorventa() ,2)); 
+
+					}
+					itemsProductosNew.add(neow);
+				}			
+				String json = (new Gson()).toJson(itemsProductosNew);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			}
 			
-			modelo.addAttribute("user", LoginController.session.getUser());
-			List<ItemsProducto> itemsProductos = Utils.listadoItemsProductos(busqueda,evento);
-			for (ItemsProducto itemsProducto : itemsProductos) {
-				ItemsProducto neow = itemsProducto;
-				if(itemsProducto.getId_moneda()!=moneda && moneda==1) {
-					neow.setPrecio(Utils.formatearDecimales(itemsProducto.getPrecio()*LoginController.session.getOepnDay().stream().filter(e->e.getIdmoneda()==moneda).findAny().get().getValorventa(),2)); 
-
-				}else {
-					//Validar que este abierto el dia 
-					neow.setPrecio(Utils.formatearDecimales(itemsProducto.getPrecio()/ LoginController.session.getOepnDay().stream().filter(e->e.getIdmoneda()==moneda).findAny().get().getValorventa() ,2)); 
-
-				}
-				itemsProductosNew.add(neow);
-			}			
-			String json = (new Gson()).toJson(itemsProductosNew);
-			responseHttp.setContentType("application/json");
-			responseHttp.setCharacterEncoding("UTF-8");
-			responseHttp.getWriter().write(json);
+			
 			
 			
 		} else {

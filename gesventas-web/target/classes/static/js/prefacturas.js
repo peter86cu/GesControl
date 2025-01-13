@@ -1,32 +1,28 @@
 
 
- function validarMoneda(){
-   if(document.getElementById("datepicker").value =="")
-     {
-        document.getElementById("itemsBtt").style.display = 'hidden';
-     }
-     else
-     {
-     	 var id = document.getElementById('idPrefactura').innerHTML;
-		 mostrar_items(id, "nada"); 
-		 validarDiaAbierto();     
-     }    
-   }   
+function validarMoneda() {
+	if (document.getElementById("datepicker").value == "") {
+		document.getElementById("itemsBtt").style.display = 'hidden';
+	}
+	else {
+		var id = document.getElementById('idPrefactura').innerHTML;
+		mostrar_items(id, "nada");
+		validarDiaAbierto();
+	}
+}
 
- function validarFecha(event){
-	 var selectedOption = event.target.options[event.target.selectedIndex];
-    console.log("Option selected: " + selectedOption.value);
-	 
-   if(document.getElementById("datepicker").value =="")
-     {
-        document.getElementById("itemsBtt").style.display = 'hidden';
-     }
-     else
-     {
-     	 var id = document.getElementById('idPrefactura').innerHTML;
-		 mostrar_items(id, "nada");      
-     }    
-   } 
+function validarFecha(event) {
+	var selectedOption = event.target.options[event.target.selectedIndex];
+	console.log("Option selected: " + selectedOption.value);
+
+	if (document.getElementById("datepicker").value == "") {
+		document.getElementById("itemsBtt").style.display = 'hidden';
+	}
+	else {
+		var id = document.getElementById('idPrefactura').innerHTML;
+		mostrar_items(id, "nada");
+	}
+}
 
 function abrirModal(modal) {
 
@@ -36,12 +32,12 @@ function abrirModal(modal) {
 }
 
 function validarDiaAbierto() {
-	
+
 	var datos = new FormData();
-	var fecha =document.getElementById("datepicker").value;
+	var fecha = document.getElementById("datepicker").value;
 	datos.append("fecha", fecha);
 	$.ajax({
-		url: globalPath+"/validar-open-dia",
+		url: globalPath + "/validar-open-dia",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -51,23 +47,23 @@ function validarDiaAbierto() {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
-				if(!data.status){
-					abrirModal('abrirDia');
-				}
+			if (!data.status) {
+				abrirModal('abrirDia');
 			}
-			
-		})
-	
-	}
+		}
 
-function sendMailPrefactura(id,codigo) {
-	
+	})
+
+}
+
+function sendMailPrefactura(id, codigo) {
+
 	var datos = new FormData();
-	 activarLoader();
+	activarLoader();
 	datos.append("id", id);
-	datos.append("codigo",codigo)
+	datos.append("codigo", codigo)
 	$.ajax({
-		url: globalPath+"/send-mail-prefactura",
+		url: globalPath + "/send-mail-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -79,30 +75,30 @@ function sendMailPrefactura(id,codigo) {
 			var data = JSON.parse(response);
 			//Ocultar DIV
 			var x = document.getElementById("loadingTemplate");
-		    if (x.style.display === "none") {
-		        x.style.display = "block";
-		    } else {
-		        x.style.display = "none";
-		    }
-		    desactivarLoading();
-				if(data.status){
-					mensajeOKSinActPagina(data.resultado)
-				}else{
-					Swal.fire({
+			if (x.style.display === "none") {
+				x.style.display = "block";
+			} else {
+				x.style.display = "none";
+			}
+			desactivarLoading();
+			if (data.status) {
+				mensajeOKSinActPagina(data.resultado)
+			} else {
+				Swal.fire({
 					icon: "error",
 					text: data.error.menssage
 				})
-				}
 			}
-			
-		})
-	
-	}
-	
+		}
+
+	})
+
+}
+
 function agregarPrefacturaInicial(event) {
- activarLoader();
- const tiempoTranscurrido = Date.now();
- const hoy = new Date(tiempoTranscurrido);
+	activarLoader();
+	const tiempoTranscurrido = Date.now();
+	const hoy = new Date(tiempoTranscurrido);
 	var datos = new FormData();
 	var accion = "inicial";
 	var idPrefactura = 0;
@@ -116,7 +112,7 @@ function agregarPrefacturaInicial(event) {
 	datos.append("forma_pago", 1);
 
 	$.ajax({
-		url: globalPath+"/crear-prefactura-venta",
+		url: globalPath + "/crear-prefactura-venta",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -128,19 +124,19 @@ function agregarPrefacturaInicial(event) {
 			var data = JSON.parse(response);
 			//Ocultar DIV
 			var x = document.getElementById("loadingTemplate");
-		    if (x.style.display === "none") {
-		        x.style.display = "block";
-		    } else {
-		        x.style.display = "none";
-		    }
-		    
+			if (x.style.display === "none") {
+				x.style.display = "block";
+			} else {
+				x.style.display = "none";
+			}
+
 			if (data.code == 200) {
 
 				$("#idPrefacturaT").val(data.resultado);
 				document.querySelector('#idPrefactura').innerText = data.resultado;
 				$('#ModalADDPrefactura').modal('show');
 				mostrar_items(data.resultado, "nada");
-			}else if(data.code == 201){
+			} else if (data.code == 201) {
 				document.querySelector('#idPrefactura').innerText = data.prefactura.id_prefactura;
 				//document.querySelector('#datepicker').innerText = respuesta["fecha_hora"]; 
 				$("#txtFormaPago > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
@@ -151,7 +147,7 @@ function agregarPrefacturaInicial(event) {
 				$("#id_proveedor").val(data.prefactura.id_cliente);
 				buscar_cliente_prefactura(data.prefactura.id_cliente, "2");
 				mostrar_items(data.prefactura.id_prefactura, "nada");
-			  
+
 				$('#ModalADDPrefactura').modal('show');
 			} else {
 				Swal.fire({
@@ -174,7 +170,7 @@ function addPrefactura(id) {
 	//activarLoader();
 
 	$.ajax({
-		url: globalPath+"/editar-prefactura",
+		url: globalPath + "/editar-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -188,7 +184,7 @@ function addPrefactura(id) {
 			if (data.code == 200) {
 
 				document.querySelector('#idPrefactura').innerText = data.prefactura.cod_factura;
-				document.querySelector('#datepicker').innerText = data.prefactura.fecha_hora; 
+				document.querySelector('#datepicker').innerText = data.prefactura.fecha_hora;
 				$("#txtFormaPago > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
 				//$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
 				$("#idPrefacturaT").val(data.prefactura.id_prefactura);
@@ -198,16 +194,16 @@ function addPrefactura(id) {
 				$("#id_proveedor").val(data.prefactura.id_cliente);
 				buscar_cliente_prefactura(data.prefactura.id_cliente, "2");
 				mostrar_items(data.prefactura.id_prefactura, "nada");
-			  
+
 				$('#ModalADDPrefactura').modal('show');
-				 desactivarLoading();
+				desactivarLoading();
 			} else {
 				Swal.fire({
 					icon: "error",
 					text: data.resultado,
 				})
 			}
-			
+
 		}
 
 
@@ -226,7 +222,7 @@ function editarPrefactura(id, estado) {
 	//activarLoader();
 
 	$.ajax({
-		url: globalPath+"/editar-prefactura",
+		url: globalPath + "/editar-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -283,9 +279,9 @@ function buscar_cliente_prefactura(id, paso) {
 	var accion = "buscarCliente";
 	datos.append("accion", accion);
 	datos.append("idCliente", id,);
-    //activarLoader();
+	//activarLoader();
 	$.ajax({
-		url: globalPath+"/buscar-cliente",
+		url: globalPath + "/buscar-cliente",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -295,7 +291,7 @@ function buscar_cliente_prefactura(id, paso) {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
-			
+
 			if (data.code == 200) {
 
 				if (paso == "1") {
@@ -316,7 +312,7 @@ function buscar_cliente_prefactura(id, paso) {
 					//document.querySelector('#direccion').innerText = data.proveedor.direccion;
 					//document.querySelector('#email').innerText = data.proveedor.email;
 					//document.querySelector('#telefono').innerText = data.proveedor.telefono;
-			//$('#ModalEditarPrefactura').modal('show');
+					//$('#ModalEditarPrefactura').modal('show');
 
 				}
 			} /*else {
@@ -351,7 +347,7 @@ function guardarDetallePrefactura(event) {
 
 
 	$.ajax({
-		url: globalPath+"/detalle-prefactura",
+		url: globalPath + "/detalle-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -359,10 +355,10 @@ function guardarDetallePrefactura(event) {
 		processData: false,
 		dataType: "json",
 		success: function(respuesta) {
-		   var response = JSON.stringify(respuesta, null, '\t');
+			var response = JSON.stringify(respuesta, null, '\t');
 			var datos = JSON.parse(response);
 			//desactivarLoading();
-			if (datos.code==200) {
+			if (datos.code == 200) {
 				$("#addItem").find("input,textarea,select,select2").val("");
 				$("#addItem input[type='checkbox']").prop('checked', false).change();
 				$('#addItem').modal('hide');
@@ -379,9 +375,9 @@ function guardarDetallePrefactura(event) {
 
 			} else {
 				Swal.fire({
-					icon: "error",					
+					icon: "error",
 					text: datos.resultado
-					
+
 				})
 			}
 		}
@@ -406,7 +402,7 @@ function mostrar_items(id, accion) {
 	//}
 
 	$.ajax({
-		url: globalPath+"/items-compra",
+		url: globalPath + "/items-compra",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -419,18 +415,18 @@ function mostrar_items(id, accion) {
 		},
 		success: function(data) {
 			const button = document.querySelector('#itemsBtt');
-			if($("#datepicker").val()=="" || $("#datepicker").val()==""){				
-				
+			if ($("#datepicker").val() == "" || $("#datepicker").val() == "") {
+
 				$(".items").html(data).fadeIn('slow');
 				document.getElementById("itemsBtt").style.visibility = 'hidden';
-			}else{
-				
+			} else {
+
 				$(".items").html(data).fadeIn('slow');
 			}
-			
+
 			//desactivarLoading();
 		}
-		
+
 	});
 
 }
@@ -445,7 +441,7 @@ function eliminar_item(id, idOrden) {
 
 
 	$.ajax({
-		url: globalPath+"/delete-items-prefactura",
+		url: globalPath + "/delete-items-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -487,8 +483,25 @@ $(document).ready(function() {
 		//dropdownParent: $('#ModalADDOrdenes'),
 		dropdownParent: $('#addItem'),
 		theme: 'bootstrap-5',
+
+		language: {
+			inputTooShort: function() {
+				return "Debe ingresar 2 caracteres";
+			},
+			minimumInputLength: function() {
+				return "Debe ingresar 2 caracteres";
+			},
+			noResults: function() {
+			       return "Debe abrir el día, para poder continuar.";
+			 },
+			searching: function() {
+
+				return "Buscando..";
+			}
+		},
+
 		ajax: {
-			url: globalPath+"/items-productos",
+			url: globalPath + "/items-productos",
 			method: "POST",
 			dataType: 'json',
 			delay: 250,
@@ -496,13 +509,18 @@ $(document).ready(function() {
 				return {
 					q: params.term, // search term
 					tipo: $('#txtFormaPago').val(),
-					evento:3
+					evento: 3
 				};
 			},
 			processResults: function(data) {
-				return {
-					results: data
-				};
+			    if (data && data.length === 0) {
+			        return {
+			            results: [],
+			        };
+			    }
+			    return {
+			        results: data
+			    };
 			},
 			cache: true
 		},
@@ -511,7 +529,7 @@ $(document).ready(function() {
 
 		$("#descripcionProducto").val($('.productos').select2('data')[0].nombre);
 		$("#precio").val($('.productos').select2('data')[0].precio);
-		if($('.productos').select2('data')[0].text.startsWith("1")){
+		if ($('.productos').select2('data')[0].text.startsWith("1")) {
 			document.getElementById('precio').disabled = false;
 		}
 
@@ -527,7 +545,7 @@ $(document).ready(function() {
 		dropdownParent: $('#ModalADDPrefactura'),
 		theme: 'bootstrap-5',
 		ajax: {
-			url: globalPath+"/items-cliente",
+			url: globalPath + "/items-cliente",
 			method: "POST",
 			dataType: 'json',
 			delay: 250,
@@ -581,7 +599,7 @@ function guardar_cliente(idCliente) {
 	datos.append("forma_pago", 0);
 
 	$.ajax({
-		url: globalPath+"/crear-prefactura-venta",
+		url: globalPath + "/crear-prefactura-venta",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -655,7 +673,7 @@ function guardar_orden(estado) {
 			datos.append("estado", var_estado);
 
 			$.ajax({
-				url: globalPath+"/crear-prefactura-venta",
+				url: globalPath + "/crear-prefactura-venta",
 				method: "POST",
 				data: datos,
 				chache: false,
@@ -767,7 +785,7 @@ function guardar_prefacturaEditadas(estado) {
 
 	if (var_estado > 1) {
 		$.ajax({
-			url: globalPath+"/crear-prefactura-venta",
+			url: globalPath + "/crear-prefactura-venta",
 			method: "POST",
 			data: datos,
 			chache: false,
@@ -812,14 +830,14 @@ function guardar_prefacturaEditadas(estado) {
 }
 
 
-function eliminarPefactura(idPref,codPrefactura) {
+function eliminarPefactura(idPref, codPrefactura) {
 	//var idOrden=  $(this).attr("idOrden");
 	var datos = new FormData();
 	var accion = "delete";
 
 	datos.append("accion", accion);
 	datos.append("idPrefactura", idPref);
-	datos.append("idCliente",0);	
+	datos.append("idCliente", 0);
 	datos.append("estado", 1);
 	datos.append("fecha", "");
 	datos.append("forma_pago", 0);
@@ -844,7 +862,7 @@ function eliminarPefactura(idPref,codPrefactura) {
 		if (result.isConfirmed) {
 
 			$.ajax({
-				url: globalPath+"/crear-prefactura-venta",
+				url: globalPath + "/crear-prefactura-venta",
 				method: "POST",
 				data: datos,
 				chache: false,
@@ -904,50 +922,50 @@ $(document).ready(function() {
 	});
 });
 
-function datosImprimir(idPrefactura,idCliente,codFactura){
-        var datos = new FormData();
+function datosImprimir(idPrefactura, idCliente, codFactura) {
+	var datos = new FormData();
 
-        	datos.append("idCliente", idCliente);
-        	datos.append("idPrefactura", idPrefactura);
-        	datos.append("codigo",codFactura)
-                 $.ajax({
-        				url: globalPath+"/imprimir-prefactura",
-        				method: "POST",
-        				data: datos,
-        				chache: false,
-        				contentType: false,
-        				processData: false,
-        				dataType: "json",
-        				success: function(respuesta) {
-        					var response = JSON.stringify(respuesta, null, '\t');
-        					var datas = JSON.parse(response);
-        					if (datas.code == 200) {
-        					//window.open(datas.resultado,"_blank");
-        					ventanaCentrada('/prefacturas/'+codFactura+'.pdf','Prefactura','','1024','768','true');
-
-
-        					} else {
-        						Swal.fire({
-        							icon: 'error',
-        							text: datas.resultado,
-        						})
-        					}
-
-        				}
-        			});
+	datos.append("idCliente", idCliente);
+	datos.append("idPrefactura", idPrefactura);
+	datos.append("codigo", codFactura)
+	$.ajax({
+		url: globalPath + "/imprimir-prefactura",
+		method: "POST",
+		data: datos,
+		chache: false,
+		contentType: false,
+		processData: false,
+		dataType: "json",
+		success: function(respuesta) {
+			var response = JSON.stringify(respuesta, null, '\t');
+			var datas = JSON.parse(response);
+			if (datas.code == 200) {
+				//window.open(datas.resultado,"_blank");
+				ventanaCentrada('/prefacturas/' + codFactura + '.pdf', 'Prefactura', '', '1024', '768', 'true');
 
 
+			} else {
+				Swal.fire({
+					icon: 'error',
+					text: datas.resultado,
+				})
+			}
+
+		}
+	});
 
 
-   }
-function ventanaCentrada(theURL,winName,features, myWidth, myHeight, isCenter) { //v3.0
- if(window.screen)if(isCenter)if(isCenter=="true"){
-    var myLeft = (screen.width-myWidth)/2;
-    var myTop = (screen.height-myHeight)/2;
-    features+=(features!='')?',':'';
-    features+=',left='+myLeft+',top='+myTop;
-  }
-  window.open(theURL,winName,features+((features!='')?',':'')+'width='+myWidth+',height='+myHeight);
+
+
+}
+function ventanaCentrada(theURL, winName, features, myWidth, myHeight, isCenter) { //v3.0
+	if (window.screen) if (isCenter) if (isCenter == "true") {
+		var myLeft = (screen.width - myWidth) / 2;
+		var myTop = (screen.height - myHeight) / 2;
+		features += (features != '') ? ',' : '';
+		features += ',left=' + myLeft + ',top=' + myTop;
+	}
+	window.open(theURL, winName, features + ((features != '') ? ',' : '') + 'width=' + myWidth + ',height=' + myHeight);
 }
 
 //Aqui va el paginado
@@ -1044,12 +1062,12 @@ function calculoPrecioUtilidad() {
 
 
 	let precio = $("#precio").val();
-	
+
 	let porciento = $("#txtUtil").val();
 
-	let resultado = (precio*porciento) / 100;
+	let resultado = (precio * porciento) / 100;
 
-	let precioFinal = parseInt(precio) +resultado;
+	let precioFinal = parseInt(precio) + resultado;
 
 	$("#precioUtil").val(Math.round(precioFinal));
 
