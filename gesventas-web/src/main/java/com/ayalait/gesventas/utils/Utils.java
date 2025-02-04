@@ -421,7 +421,7 @@ public class Utils {
 		int monto_ventas = 0;
 		int var8;
 		ResultSet id = Conexion.getConexion(
-				"select v.id_venta from ventas v, aperturas_terminal ac where v.id_apertura_cajero=ac.id_apertura_cajero and  ac.fecha_hora_cierre is null and v.estado=2 and v.id_apertura_cajero="
+				"select v.id_venta from ventas v, aperturas_terminal ac where v.id_apertura_cajero=ac.id_apertura_cajero and  ac.fecha_hora_cierre is null and (v.estado=2 or v.estado=13) and v.id_apertura_cajero="
 						+ idApertura); 
 		try {
 			while(id.next()) {
@@ -432,7 +432,7 @@ public class Utils {
 			montoInicial = obtenerMontoAperturaInicial(idApertura, idUsuario);
 
 			for (total = Conexion.getConexion(
-					"select sum(v.monto_total) monto_total from ventas v, ventas_cobros vc where v.id_venta= vc.id_venta and v.estado=2 and vc.id_forma_cobro= 1 and v.id_apertura_cajero="
+					"select sum(v.monto_total) monto_total from ventas v, ventas_cobros vc where v.id_venta= vc.id_venta and (v.estado=2 or v.estado=13) and v.id_apertura_cajero="
 							+ idApertura); total.next(); monto_ventas = total.getInt("monto_total")) {
 			}
 			
@@ -687,7 +687,7 @@ public class Utils {
 		try {
 			compra = Conexion.getConexion("SELECT distinct ater.id_apertura_cajero,ater.fecha_inicio,vc.id_venta_cobro,vc.cobro, fc.descripcion FROM aperturas_terminal ater, apertura_dia ad, arqueos a, ventas v, ventas_cobros vc, formas_cobros fc WHERE ater.id_apertura_dia=ad.id AND a.id_apertura_cajero=ater.id_apertura_cajero \r\n"
 					+ "AND v.id_apertura_cajero=ater.id_apertura_cajero AND vc.id_venta=v.id_venta AND fc.id_forma_cobro=vc.id_forma_cobro AND ater.id_usuario='"+idUsuario+"'"
-					+ "AND ater.fecha_hora_cierre IS NOT NULL AND ater.fecha_inicio='"+fecha+"' AND ater.id_tipo_arqueo=3 AND a.id_cuadre=2 AND v.estado=2");
+					+ "AND ater.fecha_hora_cierre IS NOT NULL AND ater.fecha_inicio='"+fecha+"' AND ater.id_tipo_arqueo=3 AND a.id_cuadre=2 AND (v.estado=2 or v.estado=13)");
            if(compra!=null){
 			   while (compra.next()) {
 				   VentasPorArqueoUsuario venta = new VentasPorArqueoUsuario();

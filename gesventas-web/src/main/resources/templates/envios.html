@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+
+
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1>
+								<i class="fas fa-file-invoice-dollar" style="color: #218838"></i>
+								<strong>GESTIÓN DE ENVIOS</strong>
+							</h1>
+						</div>
+
+					</div>
+				</div>
+				<!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión de envios</li>
+				</ol>
+			</div>
+
+
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+					<input type="text" class="form-control pull-right"
+						style="width: 20%;" id="searchlistadoventas"
+						placeholder="Type to search table...">
+				</div>
+				<br>
+
+				<div th:if="${success != null}">
+					<label th:text="${success}"></label>
+				</div>
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped"
+						id="listaventasops">
+						<thead>
+							<tr style="background: #778899">
+								<th style="text-align: center; width: 10%"><strong>TRAKING</strong></th>
+								<th style="text-align: center; width: 6%"><strong>VENTA</strong></th>
+								<th style="text-align: center; width: 12%"><strong>CLIENTE</strong></th>
+								<th style="text-align: center; width: 10%"><strong>DIRECCIÓN</strong></th>
+								<th style="text-align: center; width: 12%"><strong>ASIGNADO</strong></th>
+								<th style="text-align: center; width: 12%"><strong>FECHA
+										GENERADO</strong></th>
+								<th style="text-align: center; width: 10%"><strong>OBSERVACIONES</strong></th>
+								<th style="text-align: center; width: 14%"><strong>ESTADO</strong></th>
+								<th style="width: 9%"><strong>ACCIÓN</strong></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="envio : ${envioslst}">
+								<td style="text-align: center;"
+									th:text="${envio.codigoSeguimiento}"></td>
+
+								<!-- Venta con hipervínculo para ver detalles -->
+								<td style="text-align: center;"><a href="#"
+									class="verVenta" th:attr="data-idventa=${envio.idVenta}">Ver
+										datos</a></td>
+
+								<td class="idCliente" style="display: none;"
+									th:text="${envio.idCliente}"></td>
+								<td class="nombreCliente" style="text-align: center;"></td>
+
+								<!-- Dirección con hipervínculo para ver detalles -->
+								<td style="text-align: center;"><a href="#"
+									class="verDireccion"
+									th:attr="data-iddireccion=${envio.idDireccion}">Ver
+										dirección</a></td>
+
+								<td style="text-align: center;"><span
+									th:if="${envio.idUsuarioAsignado == user.idusuario}"
+									th:text="${user.getEmpleado().nombre + ' ' + user.getEmpleado().apellidos}">
+								</span> <span th:unless="${envio.idUsuarioAsignado == user.idusuario}"
+									th:text="${envio.idUsuarioAsignado}"> </span></td>
+								<td style="text-align: center;"
+									th:text="${envio.fechaGeneracion}"></td>
+
+								<!-- Botón para agregar/modificar observaciones -->
+								<td>
+									<button class="btn btn-primary modalObservaciones"
+										data-bs-toggle="modal" data-bs-target="#modalObservaciones"
+										th:attr="data-id=${envio.idEnvio}"
+										th:data-observacion="${envio.observaciones}"
+										style="color: #000000; background-color: #66CDAA; border-color: #20B2AA"
+										th:disabled="${envio.idUsuarioAsignado == null}">
+										<i class="far fa-edit"></i>
+									</button>
+								</td>
+
+								<!-- Estado del envío -->
+								<td style="text-align: center;"><select
+									class="form-select estadoEnvio"
+									th:disabled="${envio.idUsuarioAsignado == null}"
+									th:data-id="${envio.idEnvio}">
+										<option th:each="estado : ${estados}"
+											th:value="${estado.id_venta_estado}"
+											th:text="${estado.descripcion}"
+											th:selected="${estado.id_venta_estado == envio.estado}"></option>
+								</select></td>
+
+								<!-- Acciones -->
+								<td style="text-align: center;">
+									<!-- Botón Asignar Envío -->
+									<button class="btn btn-success asignarEnvio"
+										th:data-id="${envio.idEnvio}"
+										th:disabled="${envio.idUsuarioAsignado != null}">
+										<i class="fas fa-user-check"></i> Asignar
+									</button> <!-- Botón Generar Etiqueta -->
+									<button class="btn btn-info generarEtiqueta"
+										th:data-id="${envio.idEnvio}" style="margin-left: 5px;"
+										th:disabled="${envio.idUsuarioAsignado == null}" onclick="generarEtiqueta()">
+										<i class="fas fa-print"></i> Etiqueta
+									</button>
+								</td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+
+			<!-- Modal para Detalles de Venta -->
+			<div id="modalVenta" class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Detalles de la Venta</h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<table class="table">
+								<tbody id="ventaDetalles">
+									<!-- Aquí se insertarán los datos de la venta con JS -->
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal para Dirección -->
+			<div id="modalDireccion" class="modal fade" tabindex="-1"
+				role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Dirección del Cliente</h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<table class="table">
+								<tbody id="direccionDetalles">
+									<!-- Aquí se insertarán los datos de la dirección con JS -->
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- Modal para editar observaciones -->
+			<div class="modal fade" id="modalObservaciones" tabindex="-1"
+				aria-labelledby="modalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Editar Observaciones</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<input type="hidden" id="envioId"> <label
+								for="observacion" class="form-label">Observación:</label>
+							<textarea id="observacion" class="form-control" rows="4"></textarea>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal">Cancelar</button>
+							<button type="button" class="btn btn-primary"
+								id="guardarObservacion">Guardar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			 <!-- Modal para mostrar la etiqueta -->
+    <div class="modal fade" id="modalEtiqueta" tabindex="-1" aria-labelledby="modalEtiquetaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Etiqueta de Envío</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="etiquetaContent">
+                    <div class="label-container">
+                        <h3>USPS FIRST-CLASS PKG™</h3>
+                        <p><strong>Remitente:</strong><br>Mi Empresa<br>Av. Principal 123, Montevideo</p>
+                        <p><strong>Destinatario:</strong><br><span id="nombreCliente"></span><br><span id="direccionCliente"></span></p>
+                        <p class="tracking">USPS TRACKING #</p>
+                        <svg id="barcode"></svg>
+                        <p id="codigoTracking"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+		</div>
+
+	</main>
+
+	<script src="js/envios.js"></script>
+
+
+	<div th:replace="template :: loadingTemplate"></div>
+
+
+
+
+</body>

@@ -44,6 +44,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public final class wsUsuarios {
 	private String hostSeguridad;
+	public String hostSeguridadShopping;
 
 	public String getHostSeguridad() {
 		return hostSeguridad;
@@ -69,6 +70,7 @@ public final class wsUsuarios {
 				p.load(propertiesStream);
 				propertiesStream.close();
 				this.hostSeguridad = p.getProperty("server.seguridad");
+				this.hostSeguridadShopping=p.getProperty("server.seguridadShopping");
 			}
 		} catch (FileNotFoundException var3) {
 			Logger.getLogger(wsUsuarios.class.getName()).log(Level.SEVERE, (String) null, var3);
@@ -80,6 +82,7 @@ public final class wsUsuarios {
 		try {
 			if(LoginController.desarrollo){
 				hostSeguridad = "http://localhost:7000";
+				hostSeguridadShopping="http://localhost:7001";
 			}else{
 				cargarServer();
 			}

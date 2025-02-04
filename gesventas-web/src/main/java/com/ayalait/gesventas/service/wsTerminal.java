@@ -36,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class wsTerminal {
 
-    private String hostTerminal;
+    public String hostTerminal;
 
 	ObjectWriter ow = (new ObjectMapper()).writer().withDefaultPrettyPrinter();
 

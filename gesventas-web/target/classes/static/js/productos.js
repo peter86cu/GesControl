@@ -248,10 +248,10 @@ function cerrarModalDetalle(cerrarModal) {
 }
 
 function abrirModalDetalle(nombreModal) {
-	activarLoader();
+	//activarLoader();
 	$('#' + nombreModal).modal({ backdrop: 'static', keyboard: false })
 	$('#' + nombreModal).modal('show');
-desactivarLoading();
+//desactivarLoading();
 
 }
 
