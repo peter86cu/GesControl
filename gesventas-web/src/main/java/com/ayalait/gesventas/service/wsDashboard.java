@@ -57,7 +57,7 @@ public final class wsDashboard {
 				p.load(propertiesStream);
 				propertiesStream.close();
 
-				hostDashboard = p.getProperty("server.dashboard");
+				hostDashboard = p.getProperty("server.cotizaciones");
 				//hostDashboard = "http://localhost:7007";
 			}
 		} catch (FileNotFoundException ex) {
@@ -69,7 +69,7 @@ public final class wsDashboard {
 	public wsDashboard() throws IOException {
 		//try {
 			if(LoginController.desarrollo){
-				hostDashboard = "http://localhost:7007";
+				hostDashboard = "http://localhost:7006";
 			}else{
 				cargarServer();
 				//hostDashboard = "http://localhost:7007";

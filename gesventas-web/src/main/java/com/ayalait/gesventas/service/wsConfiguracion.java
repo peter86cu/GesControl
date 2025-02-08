@@ -183,7 +183,7 @@ public final class wsConfiguracion {
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			String url = this.hostUserShopping + "/api/v1/tienda/user/shopping/usuario/id-usuario?id=" + id;
+			String url = LoginController.conUser.hostSeguridad + "/api/v1/tienda/user/shopping/usuario/id-usuario?id=" + id;
 			URI uri = new URI(url);
 			HttpEntity<Void> requestEntity = new HttpEntity<>(null, headers);
 
@@ -254,7 +254,7 @@ public final class wsConfiguracion {
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			String url = LoginController.conUser.hostAuthGesventas + "/api/v1/tiendas/hopping/direccion/id?id=" + id;
+			String url = LoginController.conUser.hostSeguridad + "/api/v1/tienda/shopping/direccion/id?id=" + id;
 			URI uri = new URI(url);
 			// headers.set("id", idUsuario);
 			HttpEntity<String> requestEntity = new HttpEntity<>(id, headers);

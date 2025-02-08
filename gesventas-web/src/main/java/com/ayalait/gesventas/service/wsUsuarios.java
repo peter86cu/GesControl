@@ -43,7 +43,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public final class wsUsuarios {
-	private String hostSeguridad;
+	public String hostSeguridad;
 	public String hostSeguridadShopping;
 	public String hostAuthGesventas;
 
@@ -83,7 +83,7 @@ public final class wsUsuarios {
 		try {
 			if(LoginController.desarrollo){
 				hostSeguridad = "http://localhost:7001";
-				hostSeguridadShopping="http://localhost:7001h";
+				hostSeguridadShopping="http://localhost:7001";
 			}else{
 				cargarServer();
 			}
