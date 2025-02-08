@@ -112,7 +112,7 @@ public final class wsParametros {
 			if(LoginController.desarrollo){
 				hostStock = "http://localhost:8082";
 				hostTerminal = "http://localhost:8087";
-				hostSeguridad="http://localhost:7000";
+				hostSeguridad="http://localhost:7001";
 				hostRecursosHumanos="http://localhost:8085";
 				logger = "http://localhost:8086";
 			}else{
@@ -350,7 +350,7 @@ public final class wsParametros {
 
 		try {
 
-			String url = this.hostSeguridad + "/parametros/monedas";			
+			String url = this.hostSeguridad + "/api/v1/parametros/monedas";			
 			URI uri = new URI(url);
 			ResponseEntity<List<Moneda>> response = restTemplate.exchange(uri , HttpMethod.GET, null,
 					new ParameterizedTypeReference<List<Moneda>>() {
@@ -541,7 +541,7 @@ public final class wsParametros {
 		
 		try {
 
-			String url = this.hostSeguridad + "/parametros/estados-usuarios";		 
+			String url = this.hostSeguridad + "/api/v1/parametros/estados-usuarios";		 
 			URI uri = new URI(url);
 			 
 			ResponseEntity<List<EstadoUsuarios>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
@@ -830,7 +830,7 @@ public final class wsParametros {
 		ResponseResultado responseResult = new ResponseResultado();
 		 try {
 
-				String url = this.hostSeguridad + "/log/add";
+				String url = this.hostSeguridad + "/api/v1/process/log/add";
 				HttpHeaders headers = new HttpHeaders();
  
 	 			HttpEntity<AdministracionLog> requestEntity = new HttpEntity<>(request, headers);

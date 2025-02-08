@@ -1,0 +1,17 @@
+# Ignorar archivos .class
+*.class
+
+# Ignorar carpetas de compilación comunes en Java
+bin/
+target/
+out/
+
+# Ignorar archivos generados por IDEs
+.idea/
+.vscode/
+*.iml
+
+# Ignorar dependencias descargadas en Java (Maven/Gradle)
+*.jar
+*.war
+*.ear

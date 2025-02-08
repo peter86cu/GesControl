@@ -45,6 +45,7 @@ import org.springframework.web.client.RestTemplate;
 public final class wsUsuarios {
 	private String hostSeguridad;
 	public String hostSeguridadShopping;
+	public String hostAuthGesventas;
 
 	public String getHostSeguridad() {
 		return hostSeguridad;
@@ -81,8 +82,8 @@ public final class wsUsuarios {
 	public wsUsuarios() {
 		try {
 			if(LoginController.desarrollo){
-				hostSeguridad = "http://localhost:7000";
-				hostSeguridadShopping="http://localhost:7001";
+				hostSeguridad = "http://localhost:7001";
+				hostSeguridadShopping="http://localhost:7001h";
 			}else{
 				cargarServer();
 			}
@@ -97,7 +98,7 @@ public final class wsUsuarios {
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			String url = this.hostSeguridad + "/login/token?user=" + user + "&pwd=" + pwd;
+			String url = this.hostSeguridad + "/api/v1/auth/login/token?user=" + user + "&pwd=" + pwd+"&userType=ADMIN";
 			URI uri = new URI(url);
 			ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, null, String.class);
 
@@ -192,7 +193,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/login/validar";
+			String url = this.hostSeguridad + "/api/v1/auth/login/validar";
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -230,7 +231,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/buscar?user="+user;
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/buscar?user="+user;
 			HttpHeaders headers = new HttpHeaders();
 			
 			headers.set("Authorization", "Bearer "+token);
@@ -268,7 +269,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/id-usuario?id=" + id;
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/id-usuario?id=" + id;
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -311,7 +312,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/buscar?user=" + usuario;
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/buscar?user=" + usuario;
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -353,7 +354,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/add";
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/add";
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -395,7 +396,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/eliminar?id=" + idusuario;
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/eliminar?id=" + idusuario;
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -437,7 +438,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/id?id=" + id;
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/id?id=" + id;
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -486,7 +487,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/lista";
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/lista";
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);
@@ -529,7 +530,7 @@ public final class wsUsuarios {
 		
 		try {
 
-			String url = this.hostSeguridad + "/usuario/password/cambio?id="+idUsuario+"&pass="+password;
+			String url = this.hostSeguridad + "/api/v1/gesventas/usuario/password/cambio?id="+idUsuario+"&pass="+password;
 			HttpHeaders headers = new HttpHeaders();
 
 			headers.set("Authorization", "Bearer "+token);

@@ -99,7 +99,7 @@ public final class wsConfiguracion {
 
 		try {
 
-			String url = this.hostConfiguracion + "/server";
+			String url = LoginController.conTerminal.hostTerminal + "/server";
 
 			URI uri = new URI(url);
 			ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, null, String.class);
@@ -135,7 +135,7 @@ public final class wsConfiguracion {
 		ResponseEnvios responseResult = new ResponseEnvios();
 		try {
 
-			String url = this.hostConfiguracion + "/api/envios";
+			String url = LoginController.conTerminal.hostTerminal + "/api/v1/envios";
 
 			URI uri = new URI(url);
 			ResponseEntity<List<Envios>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
@@ -342,7 +342,7 @@ public final class wsConfiguracion {
 		ResponseResultado responseResult = new ResponseResultado();
 
 		try {
-			String url = this.hostConfiguracion + "/api/envios/asignar/" + idVenta + "/" + userId;
+			String url = LoginController.conTerminal.hostTerminal + "/api/v1/envios/asignar/" + idVenta + "/" + userId;
 			URI uri = new URI(url);
 
 			ResponseEntity<Boolean> response = null;
@@ -385,7 +385,7 @@ public final class wsConfiguracion {
 	    ResponseResultado responseResult = new ResponseResultado();
 
 	    try {
-	        String url = this.hostConfiguracion + "/api/envios/" + idEnvio + "/actualizar-observacion";
+	        String url = LoginController.conTerminal.hostTerminal + "/api/v1/envios/" + idEnvio + "/actualizar-observacion";
 	        URI uri = new URI(url);
 
 	        // Crear el DTO con la observación
@@ -433,7 +433,7 @@ public final class wsConfiguracion {
 		ResponseResultado responseResult = new ResponseResultado();
 
 		try {
-			String url = this.hostConfiguracion + "/api/envios/cambiarEstado/"+idEnvio+"/"+nuevoEstado+"";
+			String url = LoginController.conTerminal.hostTerminal + "/api/v1/envios/cambiarEstado/"+idEnvio+"/"+nuevoEstado+"";
 			URI uri = new URI(url);
 
 			ResponseEntity<Boolean> response = null;
